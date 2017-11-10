@@ -24,6 +24,12 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     private Point playerPoint;
     private ObstacleManager obstacleManager;
 
+    private boolean movingPlayer = false;
+
+    private boolean gameOver = false;
+
+    private long gameOverTime;
+
     public GamePanel(Context context) {
         super (context);
 
@@ -32,11 +38,19 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         thread = new MainThread(getHolder(),this);
 
         player = new RectPlayer(new Rect(100,100,200,200), rgb(255,0,0));
-        playerPoint = new Point(150,150);
+        playerPoint = new Point(Constants.SCREEN_WIDTH/2, 3*Constants.SCREEN_HEIGHT/4);
+        player.update(playerPoint);
 
         obstacleManager = new ObstacleManager(200, 350, 75, Color.BLACK);
 
         setFocusable(true);
+    }
+
+    public void reset() {
+        playerPoint = new Point(Constants.SCREEN_WIDTH/2, 3*Constants.SCREEN_HEIGHT/4);
+        player.update(playerPoint);
+        obstacleManager = new ObstacleManager(200, 350, 75, Color.BLACK);
+        movingPlayer = false;
     }
 
     @Override
@@ -68,8 +82,15 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
+                if(!gameOver && player.getRectangle().contains((int)event.getX(), (int)event.getY()))
+                    movingPlayer = true;
+                if(gameOver && System.currentTimeMillis() - gameOverTime >= 2000) //restarting the game in 2 seconds
+                    gameOver = false;
+                break;
             case MotionEvent.ACTION_MOVE:
-                playerPoint.set((int)event.getX(), (int)event.getY());
+                if(!gameOver && movingPlayer)
+                    playerPoint.set((int)event.getX(), (int)event.getY());
+                    break;
         }
 
         //return super.onTouchEvent(event);
@@ -77,8 +98,14 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void update() {
-        player.update(playerPoint);
-        obstacleManager.update();
+        if(!gameOver) {
+            player.update(playerPoint);
+            obstacleManager.update();
+            if(obstacleManager.playerCollide(player)) {
+                gameOver = true;
+                gameOverTime = System.currentTimeMillis();
+            }
+        }
     }
 
     @Override
@@ -89,5 +116,9 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
 
         player.draw(canvas);
         obstacleManager.draw(canvas);
+
+        if(gameOver) {
+
+        }
     }
 }
