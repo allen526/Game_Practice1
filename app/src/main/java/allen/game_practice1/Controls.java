@@ -2,6 +2,7 @@ package allen.game_practice1;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 
 /**
@@ -9,28 +10,15 @@ import android.graphics.Rect;
  */
 
 public class Controls implements GameObject {
-    private Rect left;
-    private Rect right;
-    private Rect down;
-    private Rect up;
+    private Rect rectangle;
     private int color;
 
-    public Rect getRectangle(Rect direction) {
-        if(direction == left)
-            return left;
-        else if(direction == right)
-            return right;
-        else if(direction == down)
-            return down;
-        else
-            return up;
+    public Rect getRectangle() {
+            return rectangle;
     }
 
-    public Controls(Rect left, Rect right, Rect down, Rect up, int color) {
-        this.left = left;
-        this.down = down;
-        this.right = right;
-        this.up = up;
+    public Controls(Rect rectangle, int color) {
+        this.rectangle = rectangle;
         this.color = color;
     }
 
@@ -38,14 +26,16 @@ public class Controls implements GameObject {
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
         paint.setColor(color);
-        canvas.drawRect(left, paint);
-        canvas.drawRect(right, paint);
-        canvas.drawRect(down, paint);
-        canvas.drawRect(up, paint);
+        canvas.drawRect(rectangle, paint);
     }
 
     @Override
     public void update() {
 
+    }
+
+    public void update(Point point){
+        rectangle.set(point.x - rectangle.width()/2, point.y - rectangle.height()/2,
+                point.x + rectangle.width()/2, point.y + rectangle.height()/2);
     }
 }

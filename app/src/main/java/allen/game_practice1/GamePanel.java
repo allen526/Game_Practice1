@@ -22,6 +22,19 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     private Rect r = new Rect();
 
     private RectPlayer player;
+
+    /*-------- testing new controls ----------*/
+    private Controls left;
+    private Controls right;
+    private Controls up;
+    private Controls down;
+
+    private Point leftPoint;
+    private Point rightPoint;
+    private Point upPoint;
+    private Point downPoint;
+    /*-------- testing new controls ----------*/
+
     private Point playerPoint;
     private ObstacleManager obstacleManager;
 
@@ -45,6 +58,24 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         player = new RectPlayer(new Rect(100,100,200,200), rgb(255,0,0));
         playerPoint = new Point(Constants.SCREEN_WIDTH/2, 3*Constants.SCREEN_HEIGHT/4);
         player.update(playerPoint);
+
+        /*----------- testing new controls --------------*/
+        left = new Controls(new Rect(100, 100, 200, 200), rgb(0,255,0));
+        right = new Controls(new Rect(100,100,200,200), Color.BLUE);
+        down = new Controls(new Rect(100,100,200,200), Color.RED);
+        up = new Controls(new Rect(100,100,200,200), Color.RED);
+
+        leftPoint = new Point(Constants.SCREEN_WIDTH - 200, 4*Constants.SCREEN_HEIGHT/5);
+        rightPoint = new Point (Constants.SCREEN_WIDTH - 75, 4*Constants.SCREEN_HEIGHT/5);
+        downPoint = new Point (Constants.SCREEN_WIDTH - 100, 4*Constants.SCREEN_HEIGHT/5 + 175);
+        upPoint = new Point (Constants.SCREEN_WIDTH - 100, 4*Constants.SCREEN_HEIGHT/5 - 75);
+
+        left.update(leftPoint);
+        right.update(rightPoint);
+        down.update(downPoint);
+        up.update(upPoint);
+        /*----------- testing new controls --------------*/
+
 
         obstacleManager = new ObstacleManager(200, 350, 75, Color.BLACK);
 
@@ -87,19 +118,34 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (!gameOver && player.getRectangle().contains((int) event.getX(), (int) event.getY()))
+                /*if (!gameOver && player.getRectangle().contains((int) event.getX(), (int) event.getY()))
+                    movingPlayer = true;*/
+
+                /*----------------- testing new controls; left first ---------------------------------*/
+                if(!gameOver && left.getRectangle().contains((int)event.getX(), (int)event.getY())) {
+                    movingLeft = true;
                     movingPlayer = true;
+                    playerPoint.set(playerPoint.x + 1, playerPoint.y);
+                }
+                /*----------------- testing new controls; left first ---------------------------------*/
+
                 if (gameOver && (System.currentTimeMillis() - gameOverTime >= 2000)) {//restarting the game in 2 seconds
                     reset();
                     gameOver = false;
                 }
                 break;
-            case MotionEvent.ACTION_MOVE:
+
+            /*case MotionEvent.ACTION_MOVE:
                 if(!gameOver && movingPlayer)
                     playerPoint.set((int)event.getX(), (int)event.getY());
-                break;
+                break;*/
+
             case MotionEvent.ACTION_UP:
                 movingPlayer = false;
+                movingLeft = false;
+                movingRight = false;
+                movingUp = false;
+                movingDown = false;
                 break;
         }
 
@@ -126,6 +172,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
         canvas.drawColor(Color.WHITE); //fill the canvas with designated color
 
         player.draw(canvas);
+        left.draw(canvas);
+        right.draw(canvas);
+        up.draw(canvas);
+        down.draw(canvas);
         obstacleManager.draw(canvas);
 
         if(gameOver) {
