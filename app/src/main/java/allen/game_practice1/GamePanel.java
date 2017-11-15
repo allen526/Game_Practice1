@@ -26,6 +26,10 @@ public class GamePanel extends SurfaceView implements SurfaceHolder.Callback{
     private ObstacleManager obstacleManager;
 
     private boolean movingPlayer = false;
+    private boolean movingLeft = false;
+    private boolean movingRight = false;
+    private boolean movingUp = false;
+    private boolean movingDown = false;
 
     private boolean gameOver = false;
 

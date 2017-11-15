@@ -15,6 +15,7 @@ public class RectPlayer implements GameObject {
     private int color;
 
     public Rect getRectangle() {
+
         return rectangle;
     }
 
